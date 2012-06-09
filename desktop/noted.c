@@ -14,7 +14,7 @@ int getline(char *line,int max){
 }
 
 void print_usage(void){
-    printf("Usage: noted -[options] <text> \n options:\n  -n new note\n  -d # delete note with number #\n  -l list notes\n");
+    printf("Usage: noted -[options] <text> \n options:\n  -n new note\n  -l list notes\n");
 }
 
 void create_table(sqlite3 *handle){
@@ -36,17 +36,12 @@ void create_note(char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
     }
     fputs("Database connection successful! \n",stdout);
     char *query_start="INSERT INTO notes VALUES(NULL,'";
-    char *query_mid="','";
+    /*char *query_mid="','";*/
     char *query_end="')";
-    /*  for(i=0;i<sizeof(query)/sizeof(char);i++){
-        if(*query++ == '\'')
-            break;
-    }*/
     tmp = (char *)malloc(strlen(query_start) + strlen(note) + strlen(query_end));
     strcpy(tmp, query_start);
     strcat(tmp, note);
     strcat(tmp, query_end);
-    char *testinsert="INSERT INTO notes VALUES('1','Test')";
     retval = sqlite3_exec(handle,tmp,0,0,0);
     if(retval){
         fputs("Note creation failed!\n",stderr);
