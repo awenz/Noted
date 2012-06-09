@@ -73,13 +73,13 @@ void list_notes(sqlite3 *handle,sqlite3_stmt *stmt){
             for(col=0 ; col<cols;col++)
             {
                 const char *val = (const char*)sqlite3_column_text(stmt,col);
-                printf("%s = %s\t",sqlite3_column_name(stmt,col),val);
+                printf("%s ",val);
             }
             printf("\n");
         }
         else if(retval == SQLITE_DONE)
         {
-            printf("All rows fetched\n");
+            printf("------------------------------------\n");
             break;
         }
         else
