@@ -18,7 +18,7 @@ void print_usage(void){
 }
 
 void create_table(sqlite3 *handle){
-    char create_table[100] = "CREATE TABLE IF NOT EXISTS notes (nnumer INT PRIMARY KEY,note TEXT NOT NULL)";
+    char create_table[100] = "CREATE TABLE IF NOT EXISTS notes (nnmuber INTEGER PRIMARY KEY ,note TEXT NOT NULL)";
     int retval = sqlite3_exec(handle,create_table,0,0,0);
     if(retval){
         fputs("Table creation failed! \n",stderr);
@@ -35,19 +35,19 @@ void create_note(char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
         exit(EXIT_FAILURE);
     }
     fputs("Database connection successful! \n",stdout);
-    char *query="INSERT INTO notes VALUES('')";
-    for(i=0;i<sizeof(query)/sizeof(char);i++){
+    char *query_start="INSERT INTO notes VALUES(NULL,'";
+    char *query_mid="','";
+    char *query_end="')";
+    /*  for(i=0;i<sizeof(query)/sizeof(char);i++){
         if(*query++ == '\'')
             break;
-    }
-    tmp = (char *)malloc(strlen(query) + strlen(note));
-    strncpy(tmp, query, 25);
-    tmp[i]=0;
+    }*/
+    tmp = (char *)malloc(strlen(query_start) + strlen(note) + strlen(query_end));
+    strcpy(tmp, query_start);
     strcat(tmp, note);
-    query = query + 25;
-    strcat(tmp, query);
+    strcat(tmp, query_end);
     char *testinsert="INSERT INTO notes VALUES('1','Test')";
-    retval = sqlite3_exec(handle,testinsert,0,0,0);
+    retval = sqlite3_exec(handle,tmp,0,0,0);
     if(retval){
         fputs("Note creation failed!\n",stderr);
         exit(EXIT_FAILURE);
