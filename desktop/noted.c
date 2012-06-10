@@ -18,7 +18,7 @@ void print_usage(void){
 }
 
 void create_table(sqlite3 *handle){
-    char create_table[100] = "CREATE TABLE IF NOT EXISTS notes (nnmuber INTEGER PRIMARY KEY ,note TEXT NOT NULL)";
+    char create_table[100] = "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY ,title TEXT NOT NULL,note TEXT NOT NULL)";
     int retval = sqlite3_exec(handle,create_table,0,0,0);
     if(retval){
         fputs("Table creation failed! \n",stderr);
@@ -26,7 +26,7 @@ void create_table(sqlite3 *handle){
     }
 }
 
-void create_note(char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
+void create_note(char *title,char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
     int retval = sqlite3_open("sampledb.sqlite",&handle);
     create_table(handle);
     int i;
@@ -36,10 +36,12 @@ void create_note(char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
     }
     fputs("Database connection successful! \n",stdout);
     char *query_start="INSERT INTO notes VALUES(NULL,'";
-    /*char *query_mid="','";*/
+    char *query_mid="','";
     char *query_end="')";
-    tmp = (char *)malloc(strlen(query_start) + strlen(note) + strlen(query_end));
+    tmp = (char *)malloc(strlen(query_start) + strlen(note) + strlen(query_end) + strlen(title));
     strcpy(tmp, query_start);
+    strcat(tmp, title);
+    strcat(tmp, query_mid);
     strcat(tmp, note);
     strcat(tmp, query_end);
     retval = sqlite3_exec(handle,tmp,0,0,0);
@@ -96,7 +98,8 @@ int main(int argc, char** argv)
     int retval;
     char *tmp;
     char c;
-    char line[BUFSIZE];
+    char note[BUFSIZE];
+    char title[BUFSIZE];
     if( argc == 1 ){
         print_usage();
         exit(EXIT_FAILURE);
@@ -106,8 +109,11 @@ int main(int argc, char** argv)
         while (c = *++argv[0])
             switch(c) {
                 case 'n':
-                    getline(line,BUFSIZE);
-                    create_note(line,tmp,handle,stmt); 
+                    printf("Please enter the Note Title: \n");
+                    getline(title,BUFSIZE);
+                    printf("Please enter the Note: \n");
+                    getline(note,BUFSIZE);
+                    create_note(title,note,tmp,handle,stmt); 
                     break;
                 case 'd':
                     break;
