@@ -91,6 +91,26 @@ void list_notes(sqlite3 *handle,sqlite3_stmt *stmt){
     }
 }
 
+void delete_note(char *note_id, char *tmp, sqlite3 *handle){
+    int retval = sqlite3_open("sampledb.sqlite",&handle);
+    if(retval){
+        fputs("Database connection failed\n",stderr);
+        exit(EXIT_FAILURE);
+    }
+    fputs("Database connection successful!\n",stdout);
+    char *del_start="DELETE FROM notes WHERE id='";
+    char *del_end="'";
+    tmp = (char*) malloc (strlen(del_start) + strlen(note_id) + strlen(del_end));
+    strcpy(tmp, del_start);
+    strcat(tmp, note_id);
+    strcat(tmp, del_end);
+    retval = sqlite3_exec(handle,tmp,0,0,0);
+    if(retval){
+        fputs("Note deletion failed!\n",stderr);
+        exit(EXIT_FAILURE);
+    }
+}
+
 int main(int argc, char** argv)
 {
     sqlite3 *handle;
@@ -100,6 +120,7 @@ int main(int argc, char** argv)
     char c;
     char note[BUFSIZE];
     char title[BUFSIZE];
+    char note_id[BUFSIZE];
     if( argc == 1 ){
         print_usage();
         exit(EXIT_FAILURE);
@@ -113,9 +134,12 @@ int main(int argc, char** argv)
                     getline(title,BUFSIZE);
                     printf("Please enter the Note: \n");
                     getline(note,BUFSIZE);
-                    create_note(title,note,tmp,handle,stmt); 
+                    create_note(title,note,tmp,handle,stmt);
                     break;
                 case 'd':
+                    printf("Please enter the Note-ID you want to delete: \n");
+                    getline(note_id,BUFSIZE);
+                    delete_note(note_id,tmp,handle);
                     break;
                 case 'l':
                     list_notes(handle,stmt);
@@ -124,7 +148,6 @@ int main(int argc, char** argv)
                     print_usage();
                     break;
             }
-    
     sqlite3_close(handle);
     return 0;
 }
