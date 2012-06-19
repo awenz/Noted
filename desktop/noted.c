@@ -14,7 +14,7 @@ int getline(char *line,int max){
 }
 
 void print_usage(void){
-    printf("Usage: noted -[options] <text> \n options:\n  -n new note\n  -l list notes\n");
+    printf("Usage: noted -[option] \n options:\n  -n new note\n  -l list notes\n  -s search all notes for a specific search term\n  -d delete a note by id\n");
 }
 
 void create_table(sqlite3 *handle){
