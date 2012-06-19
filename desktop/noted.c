@@ -111,6 +111,51 @@ void delete_note(char *note_id, char *tmp, sqlite3 *handle){
     }
 }
 
+void search_note(char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
+    int retval = sqlite3_open("sampledb.sqlite",&handle);
+    int col,cols;
+    if(retval){
+        fputs("Database connection failed\n",stderr);
+        exit(EXIT_FAILURE);
+    }
+    fputs("Database connection successful!\n",stdout);
+    char *squery_start = "SELECT * from notes WHERE note LIKE '%";
+    char *squery_end   = "%'";
+    tmp = (char*) malloc (strlen(squery_start) + strlen(note) + strlen(squery_end));
+    strcpy(tmp, squery_start);
+    strcat(tmp, note);
+    strcat(tmp, squery_end);
+    retval = sqlite3_prepare_v2(handle,tmp,-1,&stmt,0);
+    if(retval){
+        fputs("Database search failed \n",stdout);
+        exit(EXIT_FAILURE);
+    }
+    cols = sqlite3_column_count(stmt);
+    while(1)
+    {
+        retval = sqlite3_step(stmt);
+        
+        if(retval == SQLITE_ROW)
+        {
+            
+            for(col=0 ; col<cols;col++)
+            {
+                const char *val = (const char*)sqlite3_column_text(stmt,col);
+                printf("%s ",val);
+            }
+            printf("\n");
+        }
+        else if(retval == SQLITE_DONE)
+        {
+            printf("------------------------------------\n");
+            break;
+        }
+        else
+        {
+            printf("Some error encountered\n");
+        }
+    }}
+
 int main(int argc, char** argv)
 {
     sqlite3 *handle;
@@ -143,6 +188,11 @@ int main(int argc, char** argv)
                     break;
                 case 'l':
                     list_notes(handle,stmt);
+                    break;
+                case 's':
+                    printf("Please enter the search term: \n");
+                    getline(note,BUFSIZE);
+                    search_note(note,tmp,handle,stmt);
                     break;
                 default:
                     print_usage();
