@@ -26,19 +26,18 @@ void create_table(sqlite3 *handle){
     }
 }
 
-void create_note(char *title,char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
+void create_note(char *title,char *note,char *tmp, sqlite3 *handle){
+    char *query_start="INSERT INTO notes VALUES(NULL,'";
+    char *query_mid="','";
+    char *query_end="')";
     int retval = sqlite3_open("sampledb.sqlite",&handle);
     create_table(handle);
-    int i;
     if(retval){
         fputs("Database connection failed\n",stderr);
         exit(EXIT_FAILURE);
     }
-    fputs("Database connection successful! \n",stdout);
-    char *query_start="INSERT INTO notes VALUES(NULL,'";
-    char *query_mid="','";
-    char *query_end="')";
     tmp = (char *)malloc(strlen(query_start) + strlen(note) + strlen(query_end) + strlen(title));
+    fputs("Database connection successful! \n",stdout);
     strcpy(tmp, query_start);
     strcat(tmp, title);
     strcat(tmp, query_mid);
@@ -93,13 +92,13 @@ void list_notes(sqlite3 *handle,sqlite3_stmt *stmt){
 
 void delete_note(char *note_id, char *tmp, sqlite3 *handle){
     int retval = sqlite3_open("sampledb.sqlite",&handle);
+    char *del_start="DELETE FROM notes WHERE id='";
+    char *del_end="'";
     if(retval){
         fputs("Database connection failed\n",stderr);
         exit(EXIT_FAILURE);
     }
     fputs("Database connection successful!\n",stdout);
-    char *del_start="DELETE FROM notes WHERE id='";
-    char *del_end="'";
     tmp = (char*) malloc (strlen(del_start) + strlen(note_id) + strlen(del_end));
     strcpy(tmp, del_start);
     strcat(tmp, note_id);
@@ -114,13 +113,13 @@ void delete_note(char *note_id, char *tmp, sqlite3 *handle){
 void search_note(char *note,char *tmp, sqlite3 *handle, sqlite3_stmt *stmt){
     int retval = sqlite3_open("sampledb.sqlite",&handle);
     int col,cols;
+    char *squery_start = "SELECT * from notes WHERE note LIKE '%";
+    char *squery_end   = "%'";
     if(retval){
         fputs("Database connection failed\n",stderr);
         exit(EXIT_FAILURE);
     }
     fputs("Database connection successful!\n",stdout);
-    char *squery_start = "SELECT * from notes WHERE note LIKE '%";
-    char *squery_end   = "%'";
     tmp = (char*) malloc (strlen(squery_start) + strlen(note) + strlen(squery_end));
     strcpy(tmp, squery_start);
     strcat(tmp, note);
@@ -179,7 +178,7 @@ int main(int argc, char** argv)
                     gline(title,BUFSIZE);
                     printf("Please enter the Note: \n");
                     gline(note,BUFSIZE);
-                    create_note(title,note,tmp,handle,stmt);
+                    create_note(title,note,tmp,handle);
                     break;
                 case 'd':
                     printf("Please enter the Note-ID you want to delete: \n");
