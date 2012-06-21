@@ -6,7 +6,7 @@
 #define BUFSIZE 4096
 
 
-int getline(char *line,int max){
+int gline(char *line,int max){
     if (fgets(line, max, stdin) == NULL)
         return 0;
     else
@@ -176,14 +176,14 @@ int main(int argc, char** argv)
             switch(c) {
                 case 'n':
                     printf("Please enter the Note Title: \n");
-                    getline(title,BUFSIZE);
+                    gline(title,BUFSIZE);
                     printf("Please enter the Note: \n");
-                    getline(note,BUFSIZE);
+                    gline(note,BUFSIZE);
                     create_note(title,note,tmp,handle,stmt);
                     break;
                 case 'd':
                     printf("Please enter the Note-ID you want to delete: \n");
-                    getline(note_id,BUFSIZE);
+                    gline(note_id,BUFSIZE);
                     delete_note(note_id,tmp,handle);
                     break;
                 case 'l':
@@ -191,7 +191,7 @@ int main(int argc, char** argv)
                     break;
                 case 's':
                     printf("Please enter the search term: \n");
-                    getline(note,BUFSIZE);
+                    gline(note,BUFSIZE);
                     search_note(note,tmp,handle,stmt);
                     break;
                 default:
